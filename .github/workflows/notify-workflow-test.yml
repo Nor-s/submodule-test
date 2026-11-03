@@ -1,0 +1,25 @@
+name: Notify workflow-test
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Notify workflow-test of an upstream update
+        env:
+          GH_TOKEN: ${{ secrets.WORKFLOW_TEST_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Set WORKFLOW_TEST_TOKEN with Contents: write permission for Nor-s/workflow-test."
+            exit 1
+          fi
+
+          gh api --method POST repos/Nor-s/workflow-test/dispatches \
+            -f event_type=submodule-updated
